@@ -6,13 +6,14 @@ interface Istamp {
   color: string
   shape: string
   index:number
+  secuence?:string
 }
 class MyObserver implements Observer<Istamp>{
 
   constructor(private log: string) { }
   next(value: Istamp) {
     // console[this.log](value);
-    console.log(`%c${value.shape}(${value.index})`, `color: ${value.color}; font-size:30px;`);
+    // console.log(`%c${value.shape}(${value.index})`, `color: ${value.color}; font-size:30px;`);
   }
 
   error(e) {
@@ -28,13 +29,15 @@ class MyObserver implements Observer<Istamp>{
 class ScmObservable {
   private observable: Observable<Istamp>;
   private index:number=0;
+  private secuence:string='';
 
   constructor(private geometry: string = '.', private color: string = 'blue', private limit: number = 10, private interval: number = 1000) {
     console.log('constructor');
 
     this.observable = Observable.create(this.link)
     .do((stamp:Istamp)=>{
-      console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
+      // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
+      console.log(`%c${stamp.secuence}${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`);
     })
   }
 
@@ -44,14 +47,15 @@ class ScmObservable {
      this.limit // no serviria
    }*/
   link = (observer: Observer<Istamp>) => {
-    // let index = 0;
     let interval = setInterval(() => {
       // console.log(index);
       if (this.index <= this.limit) {
+        this.secuence +='- ';
         let st: Istamp = {
           color: this.color,
           shape: this.geometry,
-          index:this.index
+          index:this.index,
+          secuence:this.secuence
         }
         observer.next(st);
         // `${this.color} : ${this.geometry} : ${this.index}`

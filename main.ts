@@ -100,7 +100,8 @@ circleBlue$.getObservable()
   // .take(5)
   // .takeUntil(triangleGreen$.getObservable())
   // .skipUntil(triangleGreen$.getObservable()) // why i dont see the completed
-  .concat(triangleGreen$.getObservable())
+  // .concat(triangleGreen$.getObservable())
+  .merge(triangleGreen$.getObservable())
   .subscribe(new MyObserver('info'))
 // triangleGreen$.getObservable().subscribe(new MyObserver('error'))
 

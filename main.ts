@@ -80,17 +80,19 @@ var circleBlue$ = new ScmObservable('.', 'blue', 10, 1000);
 var triangleRed$ = new ScmObservable('^', 'red', 10, 1000);
 
 circleBlue$.getObservable()
-  .map((stamp:Istamp)=> {
-    stamp.shape='map';
-    return stamp;
-  })
+  // .map((stamp:Istamp)=> {
+  //   stamp.shape='^';
+  //   return stamp;
+  // })
   // .filter((stamp:Istamp)=> stamp.index%3===0)
-  .scan((acc: Istamp, stam: Istamp) => {
-    acc.index = stam.index;
-    acc.secuence = stam.secuence;
-    acc.shape += stam.shape;
-    return acc
-  })
+  // .scan((acc: Istamp, stam: Istamp) => {
+  //   acc.index = stam.index;
+  //   acc.secuence = stam.secuence;
+  //   acc.shape += stam.shape;
+  //   return acc
+  // })
+  // .bufferCount(3)//not working
+  .takeLast(1)
   .subscribe(new MyObserver('info'))
 // triangleRed$.getObservable().subscribe(new MyObserver('error'))
 

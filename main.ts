@@ -13,7 +13,7 @@ class MyObserver implements Observer<Istamp>{
   constructor(private log: string) { }
   next(stamp: Istamp) {
     // console[this.log](stamp);
-    console.log(`%c${stamp.secuence}${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`);
+    console.log(`%c${stamp.index}${stamp.secuence}${stamp.shape}`, `color: red; font-size:15px;`);
     // console.log(`%c${value.shape}(${value.index})`, `color: ${value.color}; font-size:30px;`);
   }
 
@@ -30,7 +30,7 @@ class MyObserver implements Observer<Istamp>{
 class ScmObservable {
   private observable: Observable<Istamp>;
   private index:number=0;
-  private secuence:string='';
+  private secuence:string=' ';
 
   constructor(private geometry: string = '.', private color: string = 'blue', private limit: number = 10, private interval: number = 1000) {
     console.log('constructor');
@@ -38,7 +38,8 @@ class ScmObservable {
     this.observable = Observable.create(this.link)
     .do((stamp:Istamp)=>{
       // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
-      console.log(`%c${stamp.secuence}${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`);
+      // console.log(stamp.index);
+      console.log(`%c${stamp.index}${stamp.secuence}${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`);
     })
   }
 
@@ -51,7 +52,7 @@ class ScmObservable {
     let interval = setInterval(() => {
       // console.log(index);
       if (this.index <= this.limit) {
-        this.secuence +='- ';
+
         let st: Istamp = {
           color: this.color,
           shape: this.geometry,
@@ -61,6 +62,7 @@ class ScmObservable {
         observer.next(st);
         // `${this.color} : ${this.geometry} : ${this.index}`
         this.index += 1;
+        this.secuence +='- ';
       } else {
         observer.complete();
         clearInterval(interval);
@@ -82,6 +84,7 @@ circleBlue$.getObservable()
   stamp.shape='map';
   return stamp;
 })
+// .filter((stamp:Istamp)=> stamp.index%3===0)
 .subscribe(new MyObserver('info'))
 // triangleRed$.getObservable().subscribe(new MyObserver('error'))
 

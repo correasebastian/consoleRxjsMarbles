@@ -80,7 +80,7 @@ class ScmObservable {
 
 
 var circleBlue$ = new ScmObservable('.', 'blue', 10, 1000,0);
-var triangleRed$ = new ScmObservable('^', 'green', 10, 1000, 5000);
+var triangleGreen$ = new ScmObservable('^', 'green', 10, 1000, 5000);
 
 circleBlue$.getObservable()
   // .map((stamp:Istamp)=> {
@@ -98,10 +98,11 @@ circleBlue$.getObservable()
   // .skip(2)
   // .takeLast(1)
   // .take(5)
-  // .takeUntil(triangleRed$.getObservable())
-  .skipUntil(triangleRed$.getObservable()) // why i dont see the completed
+  // .takeUntil(triangleGreen$.getObservable())
+  // .skipUntil(triangleGreen$.getObservable()) // why i dont see the completed
+  .concat(triangleGreen$.getObservable())
   .subscribe(new MyObserver('info'))
-// triangleRed$.getObservable().subscribe(new MyObserver('error'))
+// triangleGreen$.getObservable().subscribe(new MyObserver('error'))
 
 
 

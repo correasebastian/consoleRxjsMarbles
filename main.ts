@@ -11,8 +11,9 @@ interface Istamp {
 class MyObserver implements Observer<Istamp>{
 
   constructor(private log: string) { }
-  next(value: Istamp) {
-    // console[this.log](value);
+  next(stamp: Istamp) {
+    // console[this.log](stamp);
+    console.log(`%c${stamp.secuence}${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`);
     // console.log(`%c${value.shape}(${value.index})`, `color: ${value.color}; font-size:30px;`);
   }
 
@@ -76,8 +77,13 @@ class ScmObservable {
 var circleBlue$ = new ScmObservable('.', 'blue', 10, 1000);
 var triangleRed$ = new ScmObservable('^', 'red', 10, 1000);
 
-circleBlue$.getObservable().subscribe(new MyObserver('info'))
-triangleRed$.getObservable().subscribe(new MyObserver('error'))
+circleBlue$.getObservable()
+.map((stamp:Istamp)=> {
+  stamp.shape='map';
+  return stamp;
+})
+.subscribe(new MyObserver('info'))
+// triangleRed$.getObservable().subscribe(new MyObserver('error'))
 
 
 

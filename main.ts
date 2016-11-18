@@ -98,7 +98,8 @@ circleBlue$.getObservable()
   // .skip(2)
   // .takeLast(1)
   // .take(5)
-  .takeUntil(triangleRed$.getObservable())
+  // .takeUntil(triangleRed$.getObservable())
+  .skipUntil(triangleRed$.getObservable()) // why i dont see the completed
   .subscribe(new MyObserver('info'))
 // triangleRed$.getObservable().subscribe(new MyObserver('error'))
 

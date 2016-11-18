@@ -2,16 +2,17 @@ import { Observable, Observer } from 'rxjs';
 let numbers = [1, 5, 10, 15];
 let source = Observable.from(numbers);
 
-interface stamp{
-  color:string
-  shape:string
+interface Istamp {
+  color: string
+  shape: string
+  index:number
 }
-class MyObserver implements Observer<string>{
+class MyObserver implements Observer<Istamp>{
 
-  constructor(private log:string){}
-  next(value) {
-    console[this.log](`${value}`);
-    console.log("%c.", "color: blue; font-size:30px;");
+  constructor(private log: string) { }
+  next(value: Istamp) {
+    // console[this.log](value);
+    console.log(`%c${value.shape}(${value.index})`, `color: ${value.color}; font-size:30px;`);
   }
 
   error(e) {
@@ -23,38 +24,18 @@ class MyObserver implements Observer<string>{
   }
 }
 
-// source.subscribe(new MyObserver());
-
-
-// Observable.create(observer => {
-
-//   setInterval(() => {
-
-//   }, 1000)
-// })
-
-
-
 
 class ScmObservable {
-  private observable: Observable<string>;
+  private observable: Observable<Istamp>;
+  private index:number=0;
 
-  constructor(private geometry: string = 'circle', private color: string = 'blue', private limit: number = 10, private interval: number = 1000) {
+  constructor(private geometry: string = '.', private color: string = 'blue', private limit: number = 10, private interval: number = 1000) {
     console.log('constructor');
-    //   this.observable = Observable.create((observer: Observer<number>) =>{
-    //   let index = 0;
-    //   let interval = setInterval(() => {
-    //      console.log(index, this.limit, this.interval);
-    //     if (index <= this.limit) {
 
-    //       observer.next(index);
-    //       index +=1;
-    //     } else {
-    //       observer.complete();
-    //     }
-    //   }, this.interval)
-    // })
     this.observable = Observable.create(this.link)
+    .do((stamp:Istamp)=>{
+      console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
+    })
   }
 
   /* arrow fuction can capture this.. but not normal function for example like this
@@ -62,14 +43,19 @@ class ScmObservable {
    link(){
      this.limit // no serviria
    }*/
-  link = (observer: Observer<string>) => {
-    let index = 0;
+  link = (observer: Observer<Istamp>) => {
+    // let index = 0;
     let interval = setInterval(() => {
       // console.log(index);
-      if (index <= this.limit) {
-
-        observer.next(`${this.color} : ${this.geometry} : ${index}`);
-        index += 1;
+      if (this.index <= this.limit) {
+        let st: Istamp = {
+          color: this.color,
+          shape: this.geometry,
+          index:this.index
+        }
+        observer.next(st);
+        // `${this.color} : ${this.geometry} : ${this.index}`
+        this.index += 1;
       } else {
         observer.complete();
         clearInterval(interval);
@@ -83,8 +69,8 @@ class ScmObservable {
 }
 
 
-var circleBlue$ = new ScmObservable('circle', 'blue', 10, 1000);
-var triangleRed$ = new ScmObservable('triangle', 'red', 10, 1000);
+var circleBlue$ = new ScmObservable('.', 'blue', 10, 1000);
+var triangleRed$ = new ScmObservable('^', 'red', 10, 1000);
 
 circleBlue$.getObservable().subscribe(new MyObserver('info'))
 triangleRed$.getObservable().subscribe(new MyObserver('error'))

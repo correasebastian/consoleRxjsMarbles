@@ -32,7 +32,7 @@ class ScmObservable {
   private index: number = 1;
   private secuence: string = ' ';
 
-  constructor(private geometry: string = '.', private color: string = 'blue', private limit: number = 10, private interval: number = 1000) {
+  constructor(private geometry: string = '.', private color: string = 'blue', private limit: number = 10, private interval: number = 1000, private delay = 0) {
     console.log('constructor');
 
     this.observable = Observable.create(this.link)
@@ -49,25 +49,28 @@ class ScmObservable {
      this.limit // no serviria
    }*/
   link = (observer: Observer<Istamp>) => {
-    let interval = setInterval(() => {
-      // console.log(index);
-      if (this.index <= this.limit) {
-        this.secuence += '- ';
-        let st: Istamp = {
-          color: this.color,
-          shape: this.geometry,
-          index: this.index,
-          secuence: this.secuence
-        }
-        observer.next(st);
-        // `${this.color} : ${this.geometry} : ${this.index}`
-        this.index += 1;
+    setTimeout(() => {
+      let interval = setInterval(() => {
+        // console.log(index);
+        if (this.index <= this.limit) {
+          this.secuence += '- ';
+          let st: Istamp = {
+            color: this.color,
+            shape: this.geometry,
+            index: this.index,
+            secuence: this.secuence
+          }
+          observer.next(st);
+          // `${this.color} : ${this.geometry} : ${this.index}`
+          this.index += 1;
 
-      } else {
-        observer.complete();
-        clearInterval(interval);
-      }
-    }, this.interval)
+        } else {
+          observer.complete();
+          clearInterval(interval);
+        }
+      }, this.interval)
+    }, this.delay)
+
   }
 
   getObservable() {
@@ -76,8 +79,8 @@ class ScmObservable {
 }
 
 
-var circleBlue$ = new ScmObservable('.', 'blue', 10, 1000);
-var triangleRed$ = new ScmObservable('^', 'red', 10, 1000);
+var circleBlue$ = new ScmObservable('.', 'blue', 10, 1000,0);
+var triangleRed$ = new ScmObservable('^', 'green', 10, 1000, 5000);
 
 circleBlue$.getObservable()
   // .map((stamp:Istamp)=> {
@@ -94,7 +97,8 @@ circleBlue$.getObservable()
   // .bufferCount(3)//not working
   // .skip(2)
   // .takeLast(1)
-  .take(5)
+  // .take(5)
+  .takeUntil(triangleRed$.getObservable())
   .subscribe(new MyObserver('info'))
 // triangleRed$.getObservable().subscribe(new MyObserver('error'))
 

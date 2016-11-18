@@ -92,7 +92,8 @@ circleBlue$.getObservable()
   //   return acc
   // })
   // .bufferCount(3)//not working
-  .takeLast(1)
+  .skip(2)
+  // .takeLast(1)
   .subscribe(new MyObserver('info'))
 // triangleRed$.getObservable().subscribe(new MyObserver('error'))
 

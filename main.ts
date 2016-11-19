@@ -163,12 +163,20 @@ $scan.addEventListener('click', () => {
   clean();
   currentObservable = circleBlue$.getObservable('scan')
     .scan((acc: Istamp[], stamp: Istamp) => {
-      // acc.index = stam.index;
-      // acc.secuence = stam.secuence;
-      // acc.shape += stam.shape;
       acc.push(stamp);
       return acc
     }, init)
+    .subscribe(new MyObserver('info'))
+});
+
+let $bufferCount = document.getElementById('buffer-count');
+
+
+$bufferCount.addEventListener('click', () => {
+
+  clean();
+   circleBlue$.getObservable('bufferCount')
+    .bufferCount(3)
     .subscribe(new MyObserver('info'))
 })
 

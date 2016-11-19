@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "randomcolor": "0.4.4",
     "rxjs": "5.0.0-rc.3"
   },
   "devDependencies": {

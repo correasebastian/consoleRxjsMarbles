@@ -1,19 +1,43 @@
 import { Observable, Observer } from 'rxjs';
+import randomColor, { other } from './random-color' //function randomColor fue esortada como defailt por eso no nceseita {}
+
+console.log(randomColor());
 let numbers = [1, 5, 10, 15];
 let source = Observable.from(numbers);
 
 interface Istamp {
   color: string
   shape: string
+  shapeColor?: string
   index: number
   secuence?: string
 }
 class MyObserver implements Observer<Istamp>{
 
   constructor(private log: string) { }
-  next(stamp: Istamp) {
+  next(stamp: Istamp | Istamp[]) {
+    if (Array.isArray(stamp)) {
+      // console.table(JSON.stringify(stamp));
+      let final = ''
+      let last = stamp[stamp.length - 1];
+      let styles: string[] = stamp.map(st => {
+        return `'color:${st.shapeColor} ; font-size:25px;'`
+      })
+
+      let shapes: string[] = stamp.map(st => {
+        return `%c${st.shape}`;
+      })
+
+      let rawStyles = styles.join(',');
+      let rawShapes = shapes.join('');
+
+      final += `console.info('%c${last.index}${last.secuence}${rawShapes}','color: blue;font-size:15px;', ${rawStyles})`
+      eval(final);
+    }
+    else {
+      console.log(`%c${stamp.index}${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
+    }
     // console[this.log](stamp);
-    console.log(`%c${stamp.index}${stamp.secuence}${stamp.shape}`, `color: red; font-size:15px;`);
     // console.log(`%c${value.shape}(${value.index})`, `color: ${value.color}; font-size:30px;`);
   }
 
@@ -26,11 +50,13 @@ class MyObserver implements Observer<Istamp>{
   }
 }
 
+// console.log('random color', randomColor())
 
 class ScmObservable {
   private observable: Observable<Istamp>;
   private index: number = 1;
   private secuence: string = ' ';
+  private currentOperator: string;
 
   constructor(private geometry: string = '.', private color: string = 'blue', private limit: number = 10, private interval: number = 1000, private delay = 0) {
     console.log('constructor');
@@ -39,7 +65,7 @@ class ScmObservable {
       .do((stamp: Istamp) => {
         // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
         // console.log(stamp.index);
-        console.log(`%c${stamp.index}${stamp.secuence}${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`);
+        console.log(`%c${stamp.index}${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
       })
   }
 
@@ -57,6 +83,7 @@ class ScmObservable {
           let st: Istamp = {
             color: this.color,
             shape: this.geometry,
+            shapeColor: randomColor(),
             index: this.index,
             secuence: this.secuence
           }
@@ -70,44 +97,156 @@ class ScmObservable {
         }
       }, this.interval)
     }, this.delay)
-
+    return () => {
+      console.log(`cleaning ${this.currentOperator}`);
+      observer.complete();
+    }
   }
 
-  getObservable() {
+  getObservable(operator: string) {
+    this.currentOperator = operator;
     return this.observable;
   }
 }
 
 
-var circleBlue$ = new ScmObservable('.', 'blue', 10, 1000,0);
+var circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
 var triangleGreen$ = new ScmObservable('^', 'green', 10, 1000, 5000);
 
-circleBlue$.getObservable()
-  // .map((stamp:Istamp)=> {
-  //   stamp.shape='^';
-  //   return stamp;
-  // })
-  // .filter((stamp:Istamp)=> stamp.index%3===0)
-  // .scan((acc: Istamp, stam: Istamp) => {
-  //   acc.index = stam.index;
-  //   acc.secuence = stam.secuence;
-  //   acc.shape += stam.shape;
-  //   return acc
-  // })
-  // .bufferCount(3)//not working
-  // .skip(2)
-  // .takeLast(1)
-  // .take(5)
-  // .takeUntil(triangleGreen$.getObservable())
-  // .skipUntil(triangleGreen$.getObservable()) // why i dont see the completed
-  // .concat(triangleGreen$.getObservable())
-  .merge(triangleGreen$.getObservable())
-  .subscribe(new MyObserver('info'))
+// circleBlue$.getObservable()
+// .map((stamp:Istamp)=> {
+//   stamp.shape='^';
+//   return stamp;
+// })
+// .filter((stamp:Istamp)=> stamp.index%3===0)
+// .scan((acc: Istamp, stam: Istamp) => {
+//   acc.index = stam.index;
+//   acc.secuence = stam.secuence;
+//   acc.shape += stam.shape;
+//   return acc
+// })
+// .bufferCount(3)//not working
+// .skip(2)
+// .takeLast(1)
+// .take(5)
+// .takeUntil(triangleGreen$.getObservable())
+// .skipUntil(triangleGreen$.getObservable()) // why i dont see the completed
+// .concat(triangleGreen$.getObservable())
+// .merge(triangleGreen$.getObservable())
+// .flatMap((stamp) =>triangleGreen$.getObservable()) //no entendi bien
+// .switchMap((stamp) =>triangleGreen$.getObservable())
+// .subscribe(new MyObserver('info'))
 // triangleGreen$.getObservable().subscribe(new MyObserver('error'))
 
 
 
 
+let $map = document.getElementById('map');
+let currentObservable: any;
+// Observable<Istamp | Istamp[]>
 
+$map.addEventListener('click', () => {
+
+  clean();
+  currentObservable = circleBlue$.getObservable('map')
+    .map((stamp: Istamp) => {
+      stamp.shape = '^';
+      return stamp;
+    })
+    .subscribe(new MyObserver('info'))
+})
+
+
+let $scan = document.getElementById('scan');
+$scan.addEventListener('click', () => {
+  let init: Istamp[] = [];
+  clean();
+  currentObservable = circleBlue$.getObservable('scan')
+    .scan((acc: Istamp[], stamp: Istamp) => {
+      // acc.index = stam.index;
+      // acc.secuence = stam.secuence;
+      // acc.shape += stam.shape;
+      acc.push(stamp);
+      return acc
+    }, init)
+    .subscribe(new MyObserver('info'))
+})
+
+let clean = () => {
+  if (currentObservable) {
+    currentObservable.unsubscribe();
+  }
+}
 
 console.log('main ts ');
+
+
+let names = ['nico', 'sebas', 'juli', 'ana'];
+
+// rest operator
+let [fisrt, second, ...rest] = names;
+
+rest.forEach(name => controlLog(name))
+
+for (let x of rest) {
+  controlLog(x);
+}
+
+
+// spread operator
+let moreNames = ['gil', ...names];
+for (let nam of moreNames) { //iterables
+  controlLog(name);
+}
+
+for (let idx in moreNames) {
+  controlLog(idx, moreNames[idx]);
+}
+
+interface IZone {
+  city?: string
+}
+
+interface IAdress {
+  street1: string
+  street2?: string
+  zone: IZone
+}
+
+let myAdress: IAdress = {
+  street1: '7012',
+  zone: {
+    city: 'NY'
+  }
+}
+
+//destructuring
+
+let {street1: st1, street2: st2 = 'no data' } = myAdress;
+
+controlLog(st1, st2);
+
+/*
+//no destructuring for objects , solo en babel stage 2
+let x= {...myAdress}
+*/
+
+// deep destructuring
+
+let {zone: {city}, street1} = myAdress;
+controlLog(city);
+
+function shortAdress({zone: {city}, street1}) {
+  return {
+    city,
+    street1
+  }
+}
+
+controlLog(shortAdress(<any>myAdress));
+
+let controlLogEnabled = false;
+function controlLog(data: any, ...rest) {
+  if (controlLogEnabled)
+    console.log(data, rest);
+}

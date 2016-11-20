@@ -15,6 +15,7 @@ interface Istamp {
 }
 class MyObserver implements Observer<Istamp>{
   index = 1
+  secuence = ' - '
   constructor(private log: string) { }
   next(stamp: Istamp | Istamp[]) {
     if (Array.isArray(stamp)) {
@@ -22,7 +23,7 @@ class MyObserver implements Observer<Istamp>{
       let final = ''
       let last = stamp[stamp.length - 1];
       let styles: string[] = stamp.map(st => {
-        return `'color:${st.shapeColor} ; font-size:25px;'`
+        return `'color:${st.shapeColor} ; font-size:15px;'`
       })
 
       let shapes: string[] = stamp.map(st => {
@@ -32,13 +33,14 @@ class MyObserver implements Observer<Istamp>{
       let rawStyles = styles.join(',');
       let rawShapes = shapes.join('');
 
-      final += `console.info('%cresp-${this.index}%c${last.secuence}${rawShapes}','color: green;font-size:15px;', 'color: black;font-size:15px;', ${rawStyles})`
+      final += `console.info('%cresp-${this.index}%c${this.secuence}${rawShapes}','color: green;font-size:15px;', 'color: black;font-size:15px;', ${rawStyles})`
       eval(final);
     }
     else {
-      console.log(`%cresp-${this.index}%c${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color: black; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
+      console.log(`%cresp-${this.index}%c${this.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color: black; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
     }
     this.index += 1;
+    this.secuence += '- '
     // console[this.log](stamp);
     // console.log(`%c${value.shape}(${value.index})`, `color: ${value.color}; font-size:30px;`);
   }
@@ -48,7 +50,7 @@ class MyObserver implements Observer<Istamp>{
   }
 
   complete() {
-    console.info('completed')
+    console.info(`completed ${this.log}`)
   }
 }
 
@@ -60,7 +62,7 @@ class ScmObservable {
   private secuence: string = ' ';
   private currentOperator: string;
 
-  constructor(private geometry: string = '.', private color: string = 'blue',
+  constructor(private geometry: string = '#', private color: string = 'blue',
     private limit: number = 10, private interval: number = 1000,
     private delay = 0,
     private name = 'ObsA',
@@ -70,16 +72,14 @@ class ScmObservable {
 
     this.observable = Observable.create(this.link)
       .do((stamp: Istamp) => {
-        // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
-        // console.log(stamp.index);
-        console.log(`%c${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: black; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
+        console.log(`%c${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: black; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:15px;`);
       })
   }
 
   /* arrow fuction can capture this.. but not normal function for example like this
 
    link(){
-     this.limit // no serviria
+     this.limit // no serviria por que no es un arrow function ????
    }*/
   link = (observer: Observer<Istamp>) => {
     setTimeout(() => {
@@ -98,7 +98,6 @@ class ScmObservable {
             secuence: this.secuence
           }
           observer.next(st);
-          // `${this.color} : ${this.geometry} : ${this.index}`
           this.index += 1;
 
         } else {
@@ -108,8 +107,8 @@ class ScmObservable {
       }, this.interval)
     }, this.delay)
     return () => {
-      console.log(`cleaning ${this.currentOperator}`);
-      observer.complete();
+      console.log(`unsubscribe ${this.name}`);
+      // observer.complete(); // i have to do this???
     }
   }
 
@@ -120,7 +119,7 @@ class ScmObservable {
 }
 
 
-var circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
+var circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0);
 var triangleGreen$ = new ScmObservable('^', 'green', 10, 1000, 5000);
 
 // circleBlue$.getObservable()
@@ -156,7 +155,7 @@ let currentObservable: any;
 // Observable<Istamp | Istamp[]>
 
 $map.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0);
   clean();
   currentObservable = circleBlue$.getObservable('map')
     .map((stamp: Istamp) => {
@@ -169,7 +168,7 @@ $map.addEventListener('click', () => {
 
 let $scan = document.getElementById('scan');
 $scan.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0);
   let init: Istamp[] = [];
   clean();
   currentObservable = circleBlue$.getObservable('scan')
@@ -184,7 +183,7 @@ let $bufferCount = document.getElementById('buffer-count');
 
 
 $bufferCount.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0);
 
   clean();
   circleBlue$.getObservable('bufferCount')
@@ -196,7 +195,7 @@ $bufferCount.addEventListener('click', () => {
 let $skip = document.getElementById('skip');
 $skip.addEventListener('click', () => {
   console.log('skip first 3 items');
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0, 'ObsA', '');
   clean();
   circleBlue$.getObservable('skip operator')
     .skip(3)
@@ -206,7 +205,7 @@ $skip.addEventListener('click', () => {
 let $take = document.getElementById('take');
 $take.addEventListener('click', () => {
   console.log('take first 3 items');
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0, 'ObsA', '');
   clean();
   circleBlue$.getObservable('take operator')
     .take(3)
@@ -214,7 +213,7 @@ $take.addEventListener('click', () => {
 })
 let $startWith = document.getElementById('start-with');
 $startWith.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('.', 'blue', 10, 1000, 0, 'ObsA', '');
+  let circleBlue$ = new ScmObservable('#', 'blue', 10, 1000, 0, 'ObsA', '');
   clean();
   circleBlue$.getObservable('startWith operator')
     .startWith(<Istamp>{
@@ -232,7 +231,7 @@ $startWith.addEventListener('click', () => {
 let $skipWhile = document.getElementById('skip-while');
 $skipWhile.addEventListener('click', () => {
   console.log('skipWhile source sent the 5 event');
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0, 'ObsA', '');
   clean();
   circleBlue$.getObservable('skipWhile operator')
     .skipWhile((stamp: Istamp) => stamp.index < 5)
@@ -242,7 +241,7 @@ $skipWhile.addEventListener('click', () => {
 let $takeWhile = document.getElementById('take-while');
 $takeWhile.addEventListener('click', () => {
   console.log('takeWhile source sent the 5 event');
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0, 'ObsA', '');
   clean();
   circleBlue$.getObservable('takeWhile operator')
     .takeWhile((stamp: Istamp) => stamp.index < 5)
@@ -253,7 +252,7 @@ $takeWhile.addEventListener('click', () => {
 let $skipUntil = document.getElementById('skip-until');
 $skipUntil.addEventListener('click', () => {
   // console.log('skipUntil  3 ');
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', desc1);
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0, 'ObsA', desc1);
   let xBlack3$ = new ScmObservable('X', 'blue', 4, 1000, 2500, 'ObsB', desc2);
 
   clean();
@@ -265,7 +264,7 @@ $skipUntil.addEventListener('click', () => {
 let $sample = document.getElementById('sample');
 $sample.addEventListener('click', () => {
   // console.log('sample  3 ');
-  let circleBlue$ = new ScmObservable('.', '#ffc107', 10, 1000, 0, 'ObsA', desc1);
+  let circleBlue$ = new ScmObservable('#', '#ffc107', 10, 1000, 0, 'ObsA', desc1);
   let xBlack3$ = new ScmObservable('X', 'blue', 4, 2500, 0, 'ObsB', desc2);
 
   clean();
@@ -276,16 +275,28 @@ $sample.addEventListener('click', () => {
 
 let $switchMap = document.getElementById('switch-map');
 $switchMap.addEventListener('click', () => {
-  let index = 0;
-  let letters = ['nothing', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
-  // console.log('switch  3 ');
-  let circleBlue$ = new ScmObservable('.', '#ffc107', 10, 1000, 0, 'ObsA', desc1);
+  let circleBlue$ = new ScmObservable('#', '#ffc107', 10, 1000, 0, 'ObsA', desc1);
 
   clean();
   circleBlue$.getObservable(desc1)
     .switchMap((stamp) => {
-      let scmO = new ScmObservable('X', 'blue', 10, 100 * stamp.index, 0, `swi${letters[stamp.index]}`, `generate switch observable ${letters[stamp.index]} `);
-      let obs= scmO.getObservable('');
+      let scmO = new ScmObservable('X', 'blue', 10, 100 * stamp.index, 0, `swi${letterByIndex(stamp.index)}`, `generate switch observable ${letterByIndex(stamp.index)} `);
+      let obs = scmO.getObservable('');
+      return obs;
+    })
+    .subscribe(new MyObserver('info'))
+})
+
+
+let $flatMap = document.getElementById('flat-map');
+$flatMap.addEventListener('click', () => {
+  let circleBlue$ = new ScmObservable('#', '#ffc107', 3, 1000, 0, 'ObsA', desc1);
+
+  clean();
+  circleBlue$.getObservable(desc1)
+    .flatMap((stamp) => {
+      let scmO = new ScmObservable('X', 'blue', 4, 100 * stamp.index, 0, `swi${letterByIndex(stamp.index)}`, `generate flat observable ${letterByIndex(stamp.index)} `);
+      let obs = scmO.getObservable('');
       return obs;
     })
     .subscribe(new MyObserver('info'))
@@ -293,7 +304,7 @@ $switchMap.addEventListener('click', () => {
 
 let $takeUntil = document.getElementById('take-until');
 $takeUntil.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', desc1);
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0, 'ObsA', desc1);
   let xBlack3$ = new ScmObservable('X', 'black', 4, 1000, 2500, 'ObsB', desc2);
 
   clean();
@@ -305,7 +316,7 @@ $takeUntil.addEventListener('click', () => {
 
 let $debounceTime = document.getElementById('debounce-time');
 $debounceTime.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0);
   clean();
   circleBlue$.getObservable('debounceTime')
     .debounceTime(2400)
@@ -314,7 +325,7 @@ $debounceTime.addEventListener('click', () => {
 
 let $concat = document.getElementById('concat');
 $concat.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', 'concat first observable');
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0, 'ObsA', 'concat first observable');
   let xBlack3$ = new ScmObservable('X', 'black', 3, 1000, 0, 'ObsB', 'concat first observable');
   clean();
   circleBlue$.getObservable('concat first observable')
@@ -324,7 +335,7 @@ $concat.addEventListener('click', () => {
 
 let $merge = document.getElementById('merge');
 $merge.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', 'merge first observable');
+  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0, 'ObsA', 'merge first observable');
   let xBlack3$ = new ScmObservable('X', 'black', 5, 700, 0, 'ObsB', 'merge first observable');
   clean();
   circleBlue$.getObservable('merge first observable')
@@ -341,6 +352,16 @@ let clean = () => {
 
 console.log('main ts ');
 
+
+function randomLetter() {
+  let letter = String.fromCharCode(97 + Math.floor(Math.random() * 26));
+  return letter.toUpperCase();
+}
+
+function letterByIndex(index: number=1) {
+ let letter= String.fromCharCode(96 + index);
+ return  letter.toUpperCase();
+}
 
 let names = ['nico', 'sebas', 'juli', 'ana'];
 

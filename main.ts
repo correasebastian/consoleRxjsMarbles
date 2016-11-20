@@ -203,6 +203,16 @@ $skip.addEventListener('click', () => {
     .subscribe(new MyObserver('info'))
 })
 
+let $take = document.getElementById('take');
+$take.addEventListener('click', () => {
+  console.log('take first 3 items');
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
+  clean();
+  circleBlue$.getObservable('take operator')
+    .take(3)
+    .subscribe(new MyObserver('info'))
+})
+
 let $skipWhile = document.getElementById('skip-while');
 $skipWhile.addEventListener('click', () => {
   console.log('skipWhile source sent the 5 event');
@@ -222,6 +232,17 @@ $skipUntil.addEventListener('click', () => {
   clean();
   circleBlue$.getObservable(desc1)
     .skipUntil(xBlack3$.getObservable(desc2))
+    .subscribe(new MyObserver('info'))
+})
+
+let $takeUntil = document.getElementById('take-until');
+$takeUntil.addEventListener('click', () => {
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', desc1);
+  let xBlack3$ = new ScmObservable('X', 'black', 4, 1000, 2500, 'ObsB', desc2);
+
+  clean();
+  circleBlue$.getObservable(desc1)
+    .takeUntil(xBlack3$.getObservable(desc2))
     .subscribe(new MyObserver('info'))
 })
 

@@ -36,7 +36,7 @@ class MyObserver implements Observer<Istamp>{
       eval(final);
     }
     else {
-      console.log(`%cresp-${this.index}%c${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`,`color: black; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
+      console.log(`%cresp-${this.index}%c${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color: black; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
     }
     this.index += 1;
     // console[this.log](stamp);
@@ -72,7 +72,7 @@ class ScmObservable {
       .do((stamp: Istamp) => {
         // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
         // console.log(stamp.index);
-        console.log(`%c${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`,`color: black; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
+        console.log(`%c${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: black; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
       })
   }
 
@@ -218,11 +218,11 @@ $startWith.addEventListener('click', () => {
   clean();
   circleBlue$.getObservable('startWith operator')
     .startWith(<Istamp>{
-      index:0,
-      color:'black',
-      shape:'*',
-      shapeColor:'pink',
-      secuence:''
+      index: 0,
+      color: 'black',
+      shape: '*',
+      shapeColor: 'pink',
+      secuence: ''
     })
     .subscribe(new MyObserver('info'))
 })
@@ -235,7 +235,7 @@ $skipWhile.addEventListener('click', () => {
   let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
   clean();
   circleBlue$.getObservable('skipWhile operator')
-    .skipWhile((stamp:Istamp)=> stamp.index<5 )
+    .skipWhile((stamp: Istamp) => stamp.index < 5)
     .subscribe(new MyObserver('info'))
 })
 
@@ -245,7 +245,7 @@ $takeWhile.addEventListener('click', () => {
   let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
   clean();
   circleBlue$.getObservable('takeWhile operator')
-    .takeWhile((stamp:Istamp)=> stamp.index<5 )
+    .takeWhile((stamp: Istamp) => stamp.index < 5)
     .subscribe(new MyObserver('info'))
 })
 
@@ -271,6 +271,23 @@ $sample.addEventListener('click', () => {
   clean();
   circleBlue$.getObservable(desc1)
     .sample(xBlack3$.getObservable(desc2))
+    .subscribe(new MyObserver('info'))
+})
+
+let $switchMap = document.getElementById('switch-map');
+$switchMap.addEventListener('click', () => {
+  let index = 0;
+  let letters = ['nothing', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'];
+  // console.log('switch  3 ');
+  let circleBlue$ = new ScmObservable('.', '#ffc107', 10, 1000, 0, 'ObsA', desc1);
+
+  clean();
+  circleBlue$.getObservable(desc1)
+    .switchMap((stamp) => {
+      let scmO = new ScmObservable('X', 'blue', 10, 100 * stamp.index, 0, `swi${letters[stamp.index]}`, `generate switch observable ${letters[stamp.index]} `);
+      let obs= scmO.getObservable('');
+      return obs;
+    })
     .subscribe(new MyObserver('info'))
 })
 

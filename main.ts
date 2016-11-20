@@ -65,7 +65,7 @@ class ScmObservable {
     private name = 'ObsA',
     private description = ''
   ) {
-    console.log('constructor');
+    // console.log('constructor');
 
     this.observable = Observable.create(this.link)
       .do((stamp: Istamp) => {
@@ -190,6 +190,18 @@ $bufferCount.addEventListener('click', () => {
     .bufferCount(3)
     .subscribe(new MyObserver('info'))
 })
+
+
+let $skip = document.getElementById('skip');
+$skip.addEventListener('click', () => {
+  console.log('skip first 3 items');
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
+  clean();
+  circleBlue$.getObservable('skip operator')
+    .skip(3)
+    .subscribe(new MyObserver('info'))
+})
+
 
 let $debounceTime = document.getElementById('debounce-time');
 $debounceTime.addEventListener('click', () => {

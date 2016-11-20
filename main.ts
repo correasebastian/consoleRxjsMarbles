@@ -223,6 +223,17 @@ $skipWhile.addEventListener('click', () => {
     .subscribe(new MyObserver('info'))
 })
 
+let $takeWhile = document.getElementById('take-while');
+$takeWhile.addEventListener('click', () => {
+  console.log('takeWhile source sent the 5 event');
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
+  clean();
+  circleBlue$.getObservable('takeWhile operator')
+    .takeWhile((stamp:Istamp)=> stamp.index<5 )
+    .subscribe(new MyObserver('info'))
+})
+
+
 let $skipUntil = document.getElementById('skip-until');
 $skipUntil.addEventListener('click', () => {
   // console.log('skipUntil  3 ');

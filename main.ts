@@ -58,15 +58,19 @@ class ScmObservable {
   private secuence: string = ' ';
   private currentOperator: string;
 
-  constructor(private geometry: string = '.', private color: string = 'blue', private limit: number = 10, private interval: number = 1000, private delay = 0) {
-    console.log('constructor');
+  constructor(private geometry: string = '.', private color: string = 'blue',
+              private limit: number = 10, private interval: number = 1000,
+               private delay = 0,
+               private description=''
+               ) {
+        console.log('constructor');
 
-    this.observable = Observable.create(this.link)
-      .do((stamp: Istamp) => {
-        // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
-        // console.log(stamp.index);
-        console.log(`%c${stamp.index}${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
-      })
+        this.observable = Observable.create(this.link)
+          .do((stamp: Istamp) => {
+            // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
+            // console.log(stamp.index);
+            console.log(`%c${stamp.index}${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
+          })
   }
 
   /* arrow fuction can capture this.. but not normal function for example like this
@@ -79,6 +83,9 @@ class ScmObservable {
       let interval = setInterval(() => {
         // console.log(index);
         if (this.index <= this.limit) {
+          if(this.index ===1){
+            console.log(`source: ${this.description} first event`);
+          }
           this.secuence += '- ';
           let st: Istamp = {
             color: this.color,
@@ -146,7 +153,7 @@ let currentObservable: any;
 // Observable<Istamp | Istamp[]>
 
 $map.addEventListener('click', () => {
-
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
   clean();
   currentObservable = circleBlue$.getObservable('map')
     .map((stamp: Istamp) => {
@@ -159,6 +166,7 @@ $map.addEventListener('click', () => {
 
 let $scan = document.getElementById('scan');
 $scan.addEventListener('click', () => {
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
   let init: Istamp[] = [];
   clean();
   currentObservable = circleBlue$.getObservable('scan')
@@ -173,16 +181,37 @@ let $bufferCount = document.getElementById('buffer-count');
 
 
 $bufferCount.addEventListener('click', () => {
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
 
   clean();
-   circleBlue$.getObservable('bufferCount')
+  circleBlue$.getObservable('bufferCount')
     .bufferCount(3)
+    .subscribe(new MyObserver('info'))
+})
+
+let $debounceTime = document.getElementById('debounce-time');
+$debounceTime.addEventListener('click', () => {
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0);
+  clean();
+  circleBlue$.getObservable('debounceTime')
+    .debounceTime(2400)
+    .subscribe(new MyObserver('info'))
+})
+
+let $concat = document.getElementById('concat');
+$concat.addEventListener('click', () => {
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'concat first observable');
+  let xBlack3$ = new ScmObservable('X', 'black', 3, 1000, 0,'concat first observable');
+  clean();
+  circleBlue$.getObservable('concat first observable')
+    .concat(xBlack3$.getObservable('second'))
     .subscribe(new MyObserver('info'))
 })
 
 let clean = () => {
   if (currentObservable) {
     currentObservable.unsubscribe();
+    currentObservable = null;
   }
 }
 

@@ -32,11 +32,11 @@ class MyObserver implements Observer<Istamp>{
       let rawStyles = styles.join(',');
       let rawShapes = shapes.join('');
 
-      final += `console.info('resp-${this.index}%c${last.secuence}${rawShapes}','color: blue;font-size:15px;', ${rawStyles})`
+      final += `console.info('%cresp-${this.index}%c${last.secuence}${rawShapes}','color: green;font-size:15px;', 'color: black;font-size:15px;', ${rawStyles})`
       eval(final);
     }
     else {
-      console.log(`resp-${this.index}%c${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
+      console.log(`%cresp-${this.index}%c${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`,`color: black; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
     }
     this.index += 1;
     // console[this.log](stamp);
@@ -72,7 +72,7 @@ class ScmObservable {
       .do((stamp: Istamp) => {
         // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
         // console.log(stamp.index);
-        console.log(`${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
+        console.log(`%c${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`,`color: black; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
       })
   }
 
@@ -212,6 +212,20 @@ $take.addEventListener('click', () => {
     .take(3)
     .subscribe(new MyObserver('info'))
 })
+let $startWith = document.getElementById('start-with');
+$startWith.addEventListener('click', () => {
+  let circleBlue$ = new ScmObservable('.', 'blue', 10, 1000, 0, 'ObsA', '');
+  clean();
+  circleBlue$.getObservable('startWith operator')
+    .startWith(<Istamp>{
+      index:0,
+      color:'black',
+      shape:'*',
+      shapeColor:'pink',
+      secuence:''
+    })
+    .subscribe(new MyObserver('info'))
+})
 
 
 
@@ -240,7 +254,7 @@ let $skipUntil = document.getElementById('skip-until');
 $skipUntil.addEventListener('click', () => {
   // console.log('skipUntil  3 ');
   let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', desc1);
-  let xBlack3$ = new ScmObservable('X', 'black', 4, 1000, 2500, 'ObsB', desc2);
+  let xBlack3$ = new ScmObservable('X', 'blue', 4, 1000, 2500, 'ObsB', desc2);
 
   clean();
   circleBlue$.getObservable(desc1)
@@ -251,8 +265,8 @@ $skipUntil.addEventListener('click', () => {
 let $sample = document.getElementById('sample');
 $sample.addEventListener('click', () => {
   // console.log('sample  3 ');
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', desc1);
-  let xBlack3$ = new ScmObservable('X', 'black', 4, 2500, 0, 'ObsB', desc2);
+  let circleBlue$ = new ScmObservable('.', '#ffc107', 10, 1000, 0, 'ObsA', desc1);
+  let xBlack3$ = new ScmObservable('X', 'blue', 4, 2500, 0, 'ObsB', desc2);
 
   clean();
   circleBlue$.getObservable(desc1)

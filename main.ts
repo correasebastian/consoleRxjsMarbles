@@ -32,11 +32,11 @@ class MyObserver implements Observer<Istamp>{
       let rawStyles = styles.join(',');
       let rawShapes = shapes.join('');
 
-      final += `console.info('res-${this.index}%c${last.secuence}${rawShapes}','color: blue;font-size:15px;', ${rawStyles})`
+      final += `console.info('resp-${this.index}%c${last.secuence}${rawShapes}','color: blue;font-size:15px;', ${rawStyles})`
       eval(final);
     }
     else {
-      console.log(`res-${this.index}%c${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
+      console.log(`resp-${this.index}%c${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
     }
     this.index += 1;
     // console[this.log](stamp);
@@ -72,7 +72,7 @@ class ScmObservable {
       .do((stamp: Istamp) => {
         // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
         // console.log(stamp.index);
-        console.log(`${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:10px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
+        console.log(`${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
       })
   }
 
@@ -200,6 +200,16 @@ $skip.addEventListener('click', () => {
   clean();
   circleBlue$.getObservable('skip operator')
     .skip(3)
+    .subscribe(new MyObserver('info'))
+})
+
+let $skipWhile = document.getElementById('skip-while');
+$skipWhile.addEventListener('click', () => {
+  console.log('skipWhile source sent the 5 event');
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', '');
+  clean();
+  circleBlue$.getObservable('skipWhile operator')
+    .skipWhile((stamp:Istamp)=> stamp.index<5 )
     .subscribe(new MyObserver('info'))
 })
 

@@ -4,7 +4,8 @@ import randomColor, { other } from './random-color' //function randomColor fue e
 console.log(randomColor());
 let numbers = [1, 5, 10, 15];
 let source = Observable.from(numbers);
-
+let desc1 = 'First Observable';
+let desc2 = 'second Observable';
 interface Istamp {
   color: string
   shape: string
@@ -37,7 +38,7 @@ class MyObserver implements Observer<Istamp>{
     else {
       console.log(`res-${this.index}%c${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
     }
-    this.index +=1;
+    this.index += 1;
     // console[this.log](stamp);
     // console.log(`%c${value.shape}(${value.index})`, `color: ${value.color}; font-size:30px;`);
   }
@@ -199,6 +200,18 @@ $skip.addEventListener('click', () => {
   clean();
   circleBlue$.getObservable('skip operator')
     .skip(3)
+    .subscribe(new MyObserver('info'))
+})
+
+let $skipUntil = document.getElementById('skip-until');
+$skipUntil.addEventListener('click', () => {
+  // console.log('skipUntil  3 ');
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', desc1);
+  let xBlack3$ = new ScmObservable('X', 'black', 4, 1000, 2500, 'ObsB', desc2);
+
+  clean();
+  circleBlue$.getObservable(desc1)
+    .skipUntil(xBlack3$.getObservable(desc2))
     .subscribe(new MyObserver('info'))
 })
 

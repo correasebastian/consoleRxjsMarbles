@@ -13,7 +13,7 @@ interface Istamp {
   secuence?: string
 }
 class MyObserver implements Observer<Istamp>{
-
+  index = 1
   constructor(private log: string) { }
   next(stamp: Istamp | Istamp[]) {
     if (Array.isArray(stamp)) {
@@ -31,12 +31,13 @@ class MyObserver implements Observer<Istamp>{
       let rawStyles = styles.join(',');
       let rawShapes = shapes.join('');
 
-      final += `console.info('%c${last.index}${last.secuence}${rawShapes}','color: blue;font-size:15px;', ${rawStyles})`
+      final += `console.info('res-${this.index}%c${last.secuence}${rawShapes}','color: blue;font-size:15px;', ${rawStyles})`
       eval(final);
     }
     else {
-      console.log(`%c${stamp.index}${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
+      console.log(`res-${this.index}%c${stamp.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
     }
+    this.index +=1;
     // console[this.log](stamp);
     // console.log(`%c${value.shape}(${value.index})`, `color: ${value.color}; font-size:30px;`);
   }
@@ -59,18 +60,19 @@ class ScmObservable {
   private currentOperator: string;
 
   constructor(private geometry: string = '.', private color: string = 'blue',
-              private limit: number = 10, private interval: number = 1000,
-               private delay = 0,
-               private description=''
-               ) {
-        console.log('constructor');
+    private limit: number = 10, private interval: number = 1000,
+    private delay = 0,
+    private name = 'ObsA',
+    private description = ''
+  ) {
+    console.log('constructor');
 
-        this.observable = Observable.create(this.link)
-          .do((stamp: Istamp) => {
-            // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
-            // console.log(stamp.index);
-            console.log(`%c${stamp.index}${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
-          })
+    this.observable = Observable.create(this.link)
+      .do((stamp: Istamp) => {
+        // console.log(`%c${stamp.shape}(${stamp.index})`, `color: ${stamp.color}; font-size:30px;`);
+        // console.log(stamp.index);
+        console.log(`${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:10px;`, `color: ${stamp.shapeColor}; font-size:30px;`);
+      })
   }
 
   /* arrow fuction can capture this.. but not normal function for example like this
@@ -83,7 +85,7 @@ class ScmObservable {
       let interval = setInterval(() => {
         // console.log(index);
         if (this.index <= this.limit) {
-          if(this.index ===1){
+          if (this.index === 1) {
             console.log(`source: ${this.description} first event`);
           }
           this.secuence += '- ';
@@ -200,11 +202,21 @@ $debounceTime.addEventListener('click', () => {
 
 let $concat = document.getElementById('concat');
 $concat.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'concat first observable');
-  let xBlack3$ = new ScmObservable('X', 'black', 3, 1000, 0,'concat first observable');
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', 'concat first observable');
+  let xBlack3$ = new ScmObservable('X', 'black', 3, 1000, 0, 'ObsB', 'concat first observable');
   clean();
   circleBlue$.getObservable('concat first observable')
     .concat(xBlack3$.getObservable('second'))
+    .subscribe(new MyObserver('info'))
+})
+
+let $merge = document.getElementById('merge');
+$merge.addEventListener('click', () => {
+  let circleBlue$ = new ScmObservable('.', 'black', 10, 1000, 0, 'ObsA', 'merge first observable');
+  let xBlack3$ = new ScmObservable('X', 'black', 5, 700, 0, 'ObsB', 'merge first observable');
+  clean();
+  circleBlue$.getObservable('merge first observable')
+    .merge(xBlack3$.getObservable('merge second Observable'))
     .subscribe(new MyObserver('info'))
 })
 

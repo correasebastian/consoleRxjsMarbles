@@ -54,7 +54,8 @@ class MyObserver implements Observer<Istamp>{
   }
 }
 
-// console.log('random color', randomColor())
+
+type shape = '#' | 'X' | '^' | 'alpha' | 'num' // console.log('random color', randomColor())
 
 class ScmObservable {
   private observable: Observable<Istamp>;
@@ -62,7 +63,7 @@ class ScmObservable {
   private secuence: string = ' ';
   private currentOperator: string;
 
-  constructor(private geometry: string = '#', private color: string = 'blue',
+  constructor(private geometry: shape = '#', private color: string = 'blue',
     private limit: number = 10, private interval: number = 1000,
     private delay = 0,
     private name = 'ObsA',
@@ -82,6 +83,7 @@ class ScmObservable {
      this.limit // no serviria por que no es un arrow function ????
    }*/
   link = (observer: Observer<Istamp>) => {
+    let shape: string;
     setTimeout(() => {
       let interval = setInterval(() => {
         // console.log(index);
@@ -90,9 +92,22 @@ class ScmObservable {
             console.log(`source: ${this.description} first event`);
           }
           this.secuence += '- ';
+          switch (this.geometry) {
+            case "alpha":
+              shape = letterByIndex(this.index);
+              break;
+
+            case "num":
+              shape = this.index.toString();
+              break;
+
+            default:
+              shape = this.geometry;
+              break;
+          }
           let st: Istamp = {
             color: this.color,
-            shape: this.geometry,
+            shape,
             shapeColor: randomColor(),
             index: this.index,
             secuence: this.secuence
@@ -155,11 +170,11 @@ let currentObservable: any;
 // Observable<Istamp | Istamp[]>
 
 $map.addEventListener('click', () => {
-  let circleBlue$ = new ScmObservable('#', 'black', 10, 1000, 0);
+  let circleBlue$ = new ScmObservable('alpha', 'black', 10, 1000, 0);
   clean();
   currentObservable = circleBlue$.getObservable('map')
     .map((stamp: Istamp) => {
-      stamp.shape = '^';
+      stamp.shape += '-rxjs';
       return stamp;
     })
     .subscribe(new MyObserver('info'))
@@ -343,6 +358,17 @@ $merge.addEventListener('click', () => {
     .subscribe(new MyObserver('info'))
 })
 
+let $combineLatest = document.getElementById('combine-latest');
+$combineLatest.addEventListener('click', () => {
+  let circleBlue$ = new ScmObservable('num', 'red', 5, 1200, 0, 'ObsA', 'combineLatest first observable');
+  let xBlack3$ = new ScmObservable('alpha', 'black', 8, 700, 0, 'ObsB', 'combineLatest first observable');
+  clean();
+  circleBlue$.getObservable('combineLatest first observable')
+    .combineLatest(xBlack3$.getObservable('combineLatest second Observable'))
+    .subscribe(new MyObserver('info'))
+})
+
+
 let clean = () => {
   if (currentObservable) {
     currentObservable.unsubscribe();
@@ -358,9 +384,9 @@ function randomLetter() {
   return letter.toUpperCase();
 }
 
-function letterByIndex(index: number=1) {
- let letter= String.fromCharCode(96 + index);
- return  letter.toUpperCase();
+function letterByIndex(index: number = 1) {
+  let letter = String.fromCharCode(96 + index);
+  return letter.toUpperCase();
 }
 
 let names = ['nico', 'sebas', 'juli', 'ana'];
@@ -427,8 +453,31 @@ function shortAdress({zone: {city}, street1}) {
 
 controlLog(shortAdress(<any>myAdress));
 
-let controlLogEnabled = false;
+let controlLogEnabled = true;
 function controlLog(data: any, ...rest) {
   if (controlLogEnabled)
     console.log(data, rest);
 }
+
+class Car {
+  constructor(private color: string) { }
+
+  getColor() {
+    return this.color;
+  }
+}
+
+class Supercar extends Car {
+  constructor(private cc: number, color: string) {
+    super(color)
+  }
+
+  getCc() {
+    return this.cc;
+  }
+}
+
+
+let ferrari = new Supercar(3000, 'red')
+
+controlLog(ferrari.getColor())

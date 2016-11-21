@@ -37,7 +37,7 @@ class MyObserver implements Observer<Istamp>{
       eval(final);
     }
     else {
-      console.log(`%cresp-${this.index}%c${this.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `color: black; font-size:15px;`, `color:${stamp.shapeColor} ; font-size:15px;`);
+      console.log(`%cresp-${this.index}%c${this.secuence}%c${stamp.shape}`, `color: green; font-size:15px;`, `background:rgba(233, 235, 236, 0.74) ;color: green; font-size:15px;`, `background:${stamp.shapeColor}; border-radius:50% ; padding:3px; color:white; font-weight: bold; font-size:15px;`);
     }
     this.index += 1;
     this.secuence += '- '
@@ -73,7 +73,7 @@ class ScmObservable {
 
     this.observable = Observable.create(this.link)
       .do((stamp: Istamp) => {
-        console.log(`%c${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: black; font-size:15px;`, `color: ${stamp.shapeColor}; font-size:15px;`);
+        console.log(`%c${this.name}-${stamp.index}%c${stamp.secuence}%c${stamp.shape}`, `color: ${stamp.color}; font-size:15px;`, `color: black; font-size:15px;`, `background:${stamp.shapeColor}; border-radius:50% ; padding:3px; color:white; font-weight: bold; font-size:15px;`);
       })
   }
 
